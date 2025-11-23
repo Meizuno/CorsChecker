@@ -7,10 +7,16 @@
 	"name": "cors-checker",
 	"main": "./.output/server/index.mjs",
 	"compatibility_date": "2025-11-21",
-	"assets": {
-		"binding": "ASSETS",
-		"directory": "./.output/public/"
-	},
+	// "assets": {
+	// 	"binding": "ASSETS",
+	// 	"directory": "./.output/public/"
+	// },
+	"routes": [
+		{
+			"pattern": "cors.meizuno.com",
+			"custom_domain": true
+		}
+	],
 	"observability": {
 		"enabled": true
 	}
