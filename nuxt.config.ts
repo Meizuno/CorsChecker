@@ -14,4 +14,10 @@ export default defineNuxtConfig({
 
   modules: ["@nuxt/ui", "nitro-cloudflare-dev"],
   css: ["~/assets/css/main.css"],
+  app: {
+    head: {
+      title: "CORS Checker",
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    },
+  },
 });
