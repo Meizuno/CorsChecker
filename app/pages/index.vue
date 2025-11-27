@@ -72,13 +72,41 @@ const { searchUrls, requestMethod, changeMethod, readStorage, addSearchUrl } =
   useLocalStorage();
 const searchUrl = ref("https://api.meizuno.com");
 const requestMethods = ref([
-  "GET",
-  "POST",
-  "PUT",
-  "DELETE",
-  "PATCH",
-  "OPTIONS",
-  "HEAD",
+  {
+    label: "GET",
+    value: "GET",
+    icon: "i-tabler-http-get",
+  },
+  {
+    label: "POST",
+    value: "POST",
+    icon: "i-tabler-http-post",
+  },
+  {
+    label: "PUT",
+    value: "PUT",
+    icon: "i-tabler-http-put",
+  },
+  {
+    label: "DELETE",
+    value: "DELETE",
+    icon: "i-tabler-http-delete",
+  },
+  {
+    label: "PATCH",
+    value: "PATCH",
+    icon: "i-tabler-http-patch",
+  },
+  {
+    label: "OPTIONS",
+    value: "OPTIONS",
+    icon: "i-tabler-http-options",
+  },
+  {
+    label: "HEAD",
+    value: "HEAD",
+    icon: "i-tabler-http-head",
+  },
 ]);
 
 const statusResponse = ref<number>(0);
