@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     headers: [
       {
         key: "server",
-        value: response.headers.get("server") || null,
+        value: response.headers.get("server") || "--",
       },
       {
         key: "content-type",
@@ -16,15 +16,15 @@ export default defineEventHandler(async (event) => {
       },
       {
         key: "access-control-allow-credentials",
-        value: response.headers.get("access-control-allow-credentials") || null,
+        value: response.headers.get("access-control-allow-credentials") || "--",
       },
       {
         key: "access-control-allow-headers",
-        value: response.headers.get("access-control-allow-headers") || null,
+        value: response.headers.get("access-control-allow-headers") || "--",
       },
       {
         key: "access-control-allow-methods",
-        value: response.headers.get("access-control-allow-methods") || null,
+        value: response.headers.get("access-control-allow-methods") || "--",
       },
     ],
     body: {

@@ -29,12 +29,29 @@
       <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold">Validator</h2>
         <UBadge size="xl" class="rounded-full" :color="badgeColor">
-          Status code {{ statusResponse }}
+          <span v-if="statusResponse < 0"> CORS Error</span>
+          <span v-else> Status code {{ statusResponse }}</span>
         </UBadge>
       </div>
       <div class="flex flex-col gap-4">
+        <ul class="space-y-1" aria-label="Password requirements">
+          <li
+            v-for="(review, index) in headerReview"
+            :key="index"
+            class="flex items-center gap-2"
+            :class="review.color"
+          >
+            <UIcon :name="review.icon" class="size-4 shrink-0" />
+
+            <span class="font-light">
+              {{ review.text }}
+            </span>
+          </li>
+        </ul>
+        <!-- <USeparator color="primary" type="solid" />
         <div>
           <h3 class="text-xl font-semibold">Headers</h3>
+
           <div v-for="header in headersResponse" class="grid grid-cols-2 gap-2">
             <span>
               {{ header.key.replace(/(^\w|-\w)/g, (s) => s.toUpperCase()) }}
@@ -42,7 +59,7 @@
             <span>{{ header.value }}</span>
           </div>
         </div>
-        <h3 class="text-xl font-semibold">Body</h3>
+        <h3 class="text-xl font-semibold">Body</h3> -->
       </div>
     </div>
   </div>
@@ -53,7 +70,7 @@ const origin = ref("");
 
 const { searchUrls, requestMethod, changeMethod, readStorage, addSearchUrl } =
   useLocalStorage();
-const searchUrl = ref("https://api.meizuno.com/messenger");
+const searchUrl = ref("https://api.meizuno.com");
 const requestMethods = ref([
   "GET",
   "POST",
@@ -71,11 +88,55 @@ const headersResponse = ref<{ key: string; value: string | null }[] | null>(
 const bodyResponse = ref<string>("");
 const bodyType = ref<string>("");
 const badgeColor = computed(() => {
+  if (statusResponse.value < 0) return "error";
   if (statusResponse.value < 200) return "neutral";
   if (statusResponse.value < 300) return "success";
   if (statusResponse.value < 400) return "warning";
   return "error";
 });
+
+const headerReview = ref<{ text: string; color: string; icon: string }[]>([
+  {
+    text: "Access Control Allow Credentials",
+    color: "text-muted",
+    icon: "i-lucide-circle-x",
+  },
+  {
+    text: "Access Control Allow Headers",
+    color: "text-muted",
+    icon: "i-lucide-circle-x",
+  },
+  {
+    text: "Access Control Allow Methods",
+    color: "text-muted",
+    icon: "i-lucide-circle-x",
+  },
+  {
+    text: "Access Control Allow Origin",
+    color: "text-muted",
+    icon: "i-lucide-circle-x",
+  },
+]);
+
+const updateHeaderReview = () => {
+  headersResponse.value?.forEach((response) => {
+    const text = response.key.replace(/(^\w|-\w)/g, (s) =>
+      s.replace("-", " ").toUpperCase()
+    );
+
+    headerReview.value.forEach((review) => {
+      if (review.text === text) {
+        if (response.value !== "--") {
+          review.color = "text-success";
+          review.icon = "i-lucide-circle-check";
+        } else {
+          review.color = "text-error";
+          review.icon = "i-lucide-circle-alert";
+        }
+      }
+    });
+  });
+};
 
 const serverFetch = async () => {
   const response = await $fetch("/api", {
@@ -86,7 +147,6 @@ const serverFetch = async () => {
     },
   });
 
-  statusResponse.value = response.status;
   headersResponse.value = response.headers;
   bodyResponse.value = response.body.data;
 
@@ -109,21 +169,26 @@ const clientFetch = async () => {
       method: requestMethod.value,
     });
 
-    console.log(response);
     if (response.ok) {
+      statusResponse.value = response.status;
       headersResponse.value?.push({
         key: "access-control-allow-origin",
         value: origin.value,
       });
     }
   } catch (error) {
-    console.error(error);
+    headersResponse.value?.push({
+      key: "access-control-allow-origin",
+      value: "--",
+    });
+    statusResponse.value = -1;
   }
 };
 
 const checkFetch = async () => {
   await serverFetch();
   await clientFetch();
+  updateHeaderReview();
 };
 
 onMounted(() => {
